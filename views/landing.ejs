@@ -1,0 +1,48 @@
+ <!DOCTYPE html>
+<html>
+	<head>
+		 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+		<meta charset='UTF-8'/>
+		<title>
+			Sprout
+		</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">
+				<link href="https://fonts.googleapis.com/css?family=Montserrat:100,300,400,600,700,800&display=swap" rel="stylesheet">
+
+		<link rel="stylesheet" type="text/css" href="/landing.css">
+		
+		
+		
+	</head>
+	<body>
+		
+		<div class="position-relative mx-auto d-flex justify-content-center align-content-center" id="display" style="height:100vh;width:100vw;">
+				<div id="landing-header" class="">
+					<h1><img src="/Icons/Sprout Icon new.png"></h1>
+					<h3 class="text-center">
+						<a href="/about" id="entry">Click Here To Enter</a>
+					</h3>
+    			</div>
+				<ul class="slideshow">
+					  <li></li>	
+					  <li></li>
+					  <li></li>
+					  <li></li>
+					  <li></li>	
+				</ul>
+			</div>
+		<script>
+		var anchor = document.getElementById("entry");
+		var y = document.getElementById("display");
+		anchor.addEventListener('click', function(){
+		y.classList.add("up");
+		
+		})
+			
+	
+		</script>
+	</body>
+</html>
