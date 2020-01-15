@@ -33,7 +33,7 @@ a.navbar-brand{
 @media only screen and  (max-width:800px){
 .carousel-img{
 	min-height:200px;
-	width:100vw; 
+	width:115vw; 
 }
 
 	.carousel-inner{
