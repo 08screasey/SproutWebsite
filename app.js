@@ -153,9 +153,9 @@ var EventSchema = new mongoose.Schema({title:String,
 									  });
 
 var Event = mongoose.model("Event", EventSchema);
+var port = process.env.PORT||3000;
 
-
-app.listen(5001, process.env.IP, (err)=>{
+app.listen(port, process.env.IP, (err)=>{
 	if(err){
 		console.log(err)
 	}else{
