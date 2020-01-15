@@ -28,7 +28,8 @@ a.navbar-brand{
 
 .carousel-img{width:100%}
 
-
+.carousel{max-width:1000px;
+margin:auto}
 
 @media only screen and  (max-width:800px){
 .carousel-img{
@@ -63,7 +64,6 @@ margin:auto;
 .carousel-item{;
 	min-height:250px;
 	width:100%; 
-	min-width:100vw;
 }
 
 
