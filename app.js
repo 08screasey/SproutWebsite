@@ -28,8 +28,8 @@ var upload = multer({ storage: storage, fileFilter: imageFilter});
 var cloudinary = require('cloudinary');
 cloudinary.config({ 
   cloud_name: 'dyrnzpky6', 
-  api_key: 561868813475496, 
-  api_secret: "WoJEZligD_74yqdEVr3OQb-QhGs"
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_SECRET
 });
 
 app.set("view engine", "ejs");
@@ -37,7 +37,7 @@ app.use(methodOverride("_method"));
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.use(expressSession({
-	secret:"I have very long hair",
+	secret:process.env.PASSPORT_SECRET,
 	resave:false,
 	saveUninitialized:false
 }));
@@ -47,7 +47,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect("mongodb+srv://sproutplantbasedeatery:heilseitan@cluster0-2xqv3.gcp.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true,
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true,
 												  useUnifiedTopology:true});
 
 app.get("/about", (req,res)=>{
