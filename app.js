@@ -1,20 +1,19 @@
-var express = require("express"),
-	app = express(),
-	mongoose = require("mongoose"),
-	expressSession = require("express-session"),
-	passport = require("passport"),
-	LocalStrategy = require("passport-local"),
-	bodyParser= require("body-parser"),
-	methodOverride = require("method-override"),
-	passportLocalMongoose= require("passport-local-mongoose"),
-	User = require("./models/user");
-
+var express = require('express'),
+    app = express(),
+    mongoose = require('mongoose'),
+    expressSession = require('express-session'),
+    passport = require('passport'),
+    LocalStrategy = require('passport-local'),
+    bodyParser = require('body-parser'),
+    methodOverride = require('method-override'),
+    passportLocalMongoose = require('passport-local-mongoose'),
+    User = require('./models/user');
 
 var multer = require('multer');
 var storage = multer.diskStorage({
-  filename: function(req, file, callback) {
-    callback(null, Date.now() + file.originalname);
-  }
+    filename: function (req, file, callback) {
+        callback(null, Date.now() + file.originalname);
+    },
 });
 var imageFilter = function (req, file, cb) {
     // accept image files only
@@ -23,142 +22,155 @@ var imageFilter = function (req, file, cb) {
     }
     cb(null, true);
 };
-var upload = multer({ storage: storage, fileFilter: imageFilter});
+var upload = multer({ storage: storage, fileFilter: imageFilter });
 
 var cloudinary = require('cloudinary');
-cloudinary.config({ 
-  cloud_name: 'dyrnzpky6', 
-  api_key: process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_SECRET
+cloudinary.config({
+    cloud_name: 'dyrnzpky6',
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-app.set("view engine", "ejs");
-app.use(methodOverride("_method"));
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static("public"));
-app.use(expressSession({
-	secret:process.env.PASSPORT_SECRET,
-	resave:false,
-	saveUninitialized:false
-}));
+app.set('view engine', 'ejs');
+app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.use(
+    expressSession({
+        secret: process.env.PASSPORT_SECRET,
+        resave: false,
+        saveUninitialized: false,
+    }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true,
-												  useUnifiedTopology:true});
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.get("/about", (req,res)=>{
-	Event.find({}, (err,events)=>{
-		if(err){
-			console.log(err)
-		}else{
-			res.render("home", {events:events,
-							   user:req.user})
-		}
-	})
-	
+app.get('/about', (req, res) => {
+    Event.find({}, (err, events) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('home', { events: events, user: req.user });
+        }
+    });
 });
 
-app.get("/:eventid/edit", isLoggedIn, (req,res)=>{
-	Event.findById(req.params.eventid, (err,event)=>{
-		if(err){console.log(err)}
-		else{res.render("edit", {event:event})}
-	})
+app.get('/:eventid/edit', isLoggedIn, (req, res) => {
+    Event.findById(req.params.eventid, (err, event) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('edit', { event: event });
+        }
+    });
 });
 
-
-app.put("/:eventid", upload.single('image'), isLoggedIn, (req,res)=>{
-	console.log(req.file);
-	cloudinary.uploader.upload(req.file.path, function(result) {
-  req.body.event.image = result.secure_url;
-	Event.findByIdAndUpdate(req.params.eventid, req.body.event, (err,event)=>{
-		if(err){
-			console.log(err)
-		}else{res.redirect("/about")}
-	})})
+app.put('/:eventid', upload.single('image'), isLoggedIn, (req, res) => {
+    console.log(req.file);
+    cloudinary.uploader.upload(req.file.path, function (result) {
+        req.body.event.image = result.secure_url;
+        Event.findByIdAndUpdate(req.params.eventid, req.body.event, (err, event) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.redirect('/about');
+            }
+        });
+    });
 });
 
-function isLoggedIn(req,res,next){
-	if(req.isAuthenticated()){
-		return next()
-	}
-	else{
-		res.redirect("/login")
-	}
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        res.redirect('/login');
+    }
 }
 
-app.get("/:eventid/delete",isLoggedIn, (req,res)=>{
-	Event.findById(req.params.eventid, (err,event)=>{
-		if(err){console.log(err)}
-		else{res.render("delete", {event:event})}
-	})
+app.get('/:eventid/delete', isLoggedIn, (req, res) => {
+    Event.findById(req.params.eventid, (err, event) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('delete', { event: event });
+        }
+    });
 });
-app.delete("/:eventid",isLoggedIn, (req,res)=>{
-	Event.findByIdAndRemove(req.params.eventid, (err,event)=>{
-		if(err){
-			console.log(err)
-		}else{res.redirect("/about")}
-	})
-});
-
-app.get("/about/bookings", (req,res)=>{
-	res.render("bookings")
-});
-
-app.get("/", (req,res)=>{
-	res.render("landing")
+app.delete('/:eventid', isLoggedIn, (req, res) => {
+    Event.findByIdAndRemove(req.params.eventid, (err, event) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect('/about');
+        }
+    });
 });
 
-app.post("/about", upload.single('image'), isLoggedIn, (req,res)=>{
-	cloudinary.uploader.upload(req.file.path, function(result) {
-  req.body.event.image = result.secure_url;
-  // add author to campground
-	console.log(req.body);
-	Event.create(req.body.event, (err,event)=>{
-		if(err){
-			console.log(err)
-		}else{
-			res.redirect("/about")
-		}
-	})})
+app.get('/about/bookings', (req, res) => {
+    res.render('bookings');
 });
-app.get("/about/new", isLoggedIn, (req,res)=>{
-	res.render("new")
-});
-app.get("/login", (req,res)=>{
-	res.render("login")
-});
-app.post("/login", passport.authenticate("local", {
-	successRedirect:"/about",
-	failureRedirect:"/login"
-}), (req,res)=>{
-	return
-})
-;
-app.get("/logout", (req,res)=>{
-	req.logout();
-	res.redirect("/about")
-});
-var EventSchema = new mongoose.Schema({title:String,
-									   date:Date,
-									  description:String,
-									  price:Number,
-									  image:String,
-									  hour:String,
-									 
-									   tax:String
-									  });
 
-var Event = mongoose.model("Event", EventSchema);
-var port = process.env.PORT||3000;
+app.get('/', (req, res) => {
+    res.render('landing');
+});
 
-app.listen(port, process.env.IP, (err)=>{
-	if(err){
-		console.log(err)
-	}else{
-		console.log("Server Up")
-	}
-})
+app.post('/about', upload.single('image'), isLoggedIn, (req, res) => {
+    cloudinary.uploader.upload(req.file.path, function (result) {
+        req.body.event.image = result.secure_url;
+        // add author to campground
+        console.log(req.body);
+        Event.create(req.body.event, (err, event) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.redirect('/about');
+            }
+        });
+    });
+});
+app.get('/about/new', isLoggedIn, (req, res) => {
+    res.render('new');
+});
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+app.post(
+    '/login',
+    passport.authenticate('local', {
+        successRedirect: '/about',
+        failureRedirect: '/login',
+    }),
+    (req, res) => {
+        return;
+    },
+);
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/about');
+});
+var EventSchema = new mongoose.Schema({
+    title: String,
+    date: Date,
+    description: String,
+    price: Number,
+    image: String,
+    hour: String,
+
+    tax: String,
+});
+
+var Event = mongoose.model('Event', EventSchema);
+var port = process.env.PORT || 3000;
+
+app.listen(port, process.env.IP, (err) => {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log('Server Up');
+    }
+});
